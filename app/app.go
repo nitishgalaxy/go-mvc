@@ -6,6 +6,7 @@ import (
 	"github.com/nitishgalaxy/go-mvc/controllers"
 )
 
+// StartApp - Start application
 func StartApp() {
 	http.HandleFunc("/users", controllers.GetUser)
 
