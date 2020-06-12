@@ -2,11 +2,13 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/nitishgalaxy/go-mvc/services"
+	"github.com/nitishgalaxy/go-mvc/utils"
 )
 
 // GetUser - Gets User
@@ -19,14 +21,26 @@ func GetUser(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		// return bad request to client
+		apiErr := &utils.ApplicationError{
+			Message:    fmt.Sprintf("User_id must be a number"),
+			StatusCode: http.StatusBadRequest,
+			Code:       "bad_request",
+		}
+		jsonValue, _ := json.Marshal(apiErr)
+
+		res.WriteHeader(apiErr.StatusCode)
+		res.Write([]byte(jsonValue))
+		//Handle the err and return to client
 		return
 	}
 
-	user, err := services.GetUser(userID)
+	user, apiErr := services.GetUser(userID)
 
-	if err != nil {
-		res.WriteHeader(http.StatusNotFound)
-		res.Write([]byte("user_id must be a number"))
+	if apiErr != nil {
+		jsonValue, _ := json.Marshal(apiErr)
+
+		res.WriteHeader(apiErr.StatusCode)
+		res.Write([]byte(jsonValue))
 		//Handle the err and return to client
 		return
 	}
